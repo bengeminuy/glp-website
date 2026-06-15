@@ -91,7 +91,11 @@ export function SignupStep({
 
         <FieldError message={serverError ?? undefined} />
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="w-full bg-emerald-600 hover:bg-emerald-700"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? "Submitting..." : "Create account & submit"}
         </Button>
       </form>

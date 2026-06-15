@@ -10,7 +10,7 @@ export function ProgressBar({ current, total }: { current: number; total: number
       </div>
       <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-200">
         <div
-          className="h-full bg-neutral-900 transition-all"
+          className="h-full bg-emerald-600 transition-all"
           style={{ width: `${pct}%` }}
         />
       </div>

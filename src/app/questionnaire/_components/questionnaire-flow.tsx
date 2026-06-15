@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProgressBar } from "@/components/intake/progress-bar";
 import { submitIntake } from "../_actions";
-import { QUESTIONS, type AnswerValue, type AnswersMap } from "./questions";
-import { QuestionRenderer, isAnswerValid } from "./question-renderer";
+import { SCREENS, type AnswerValue, type AnswersMap } from "./questions";
+import { ScreenRenderer, isScreenValid } from "./screen-renderer";
 import { SignupStep } from "./signup-step";
 
 export function QuestionnaireFlow({ alreadyAuthed }: { alreadyAuthed: boolean }) {
@@ -17,16 +17,14 @@ export function QuestionnaireFlow({ alreadyAuthed }: { alreadyAuthed: boolean })
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const totalSteps = QUESTIONS.length + (alreadyAuthed ? 0 : 1);
-  const isSignupStep = !alreadyAuthed && index === QUESTIONS.length;
-  const question = isSignupStep ? null : QUESTIONS[index];
-  const isLastQuestion = index === QUESTIONS.length - 1;
-  const currentValue = question ? answers[question.id] : undefined;
-  const canAdvance = question ? isAnswerValid(question, currentValue) : true;
+  const totalSteps = SCREENS.length + (alreadyAuthed ? 0 : 1);
+  const isSignupStep = !alreadyAuthed && index === SCREENS.length;
+  const screen = isSignupStep ? null : SCREENS[index];
+  const isLastScreen = index === SCREENS.length - 1;
+  const canAdvance = screen ? isScreenValid(screen, answers) : true;
 
-  function setAnswer(v: AnswerValue) {
-    if (!question) return;
-    setAnswers((prev) => ({ ...prev, [question.id]: v }));
+  function setAnswer(fieldId: string, v: AnswerValue) {
+    setAnswers((prev) => ({ ...prev, [fieldId]: v }));
   }
 
   async function onSubmitAuthed() {
@@ -48,15 +46,15 @@ export function QuestionnaireFlow({ alreadyAuthed }: { alreadyAuthed: boolean })
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-6 px-6 py-12">
+    <div className="mx-auto max-w-2xl space-y-6 px-6 py-12">
       <ProgressBar current={index} total={totalSteps} />
 
       <Card>
         <CardContent className="pt-6">
-          {isSignupStep || !question ? (
+          {isSignupStep || !screen ? (
             <SignupStep answers={answers} onSubmitted={onSignupSubmitted} />
           ) : (
-            <QuestionRenderer question={question} value={currentValue} onChange={setAnswer} />
+            <ScreenRenderer screen={screen} answers={answers} onChange={setAnswer} />
           )}
         </CardContent>
       </Card>
@@ -73,12 +71,20 @@ export function QuestionnaireFlow({ alreadyAuthed }: { alreadyAuthed: boolean })
         </Button>
         {isSignupStep ? (
           <span />
-        ) : alreadyAuthed && isLastQuestion ? (
-          <Button onClick={onSubmitAuthed} disabled={submitting || !canAdvance}>
+        ) : alreadyAuthed && isLastScreen ? (
+          <Button
+            onClick={onSubmitAuthed}
+            disabled={submitting || !canAdvance}
+            className="bg-emerald-600 hover:bg-emerald-700"
+          >
             {submitting ? "Submitting..." : "Submit"}
           </Button>
         ) : (
-          <Button onClick={() => setIndex((i) => i + 1)} disabled={!canAdvance}>
+          <Button
+            onClick={() => setIndex((i) => i + 1)}
+            disabled={!canAdvance}
+            className="bg-emerald-600 hover:bg-emerald-700"
+          >
             Next
           </Button>
         )}
